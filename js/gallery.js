@@ -10,6 +10,8 @@ const refs = {
   lightboxImage: document.querySelector('.lightbox__image'),
 
   closeBtn: document.querySelector('button[data-action="close-lightbox"]'),
+  rightBtn: document.querySelector('button[data-action="right-btn"]'),
+  leftBtn: document.querySelector('button[data-action="left-btn"]'),
 };
 
 refs.gallery.insertAdjacentHTML('beforeend', createMarkup(galleryItems));
@@ -41,7 +43,12 @@ function openModal(e) {
 
   refs.lightbox.classList.add('is-open');
 
+  refs.overlay.addEventListener('click', closeModalOverlay);
   refs.closeBtn.addEventListener('click', closeModal);
+  refs.rightBtn.addEventListener('click', openModalAnotherImg);
+  refs.leftBtn.addEventListener('click', openModalAnotherImg);
+  window.addEventListener('keydown', closeModalEsc);
+  window.addEventListener('keydown', openModalAnotherImg);
 }
 
 // Закрытие модального окна по клику на кнопку button[data - action= "close-lightbox"].
@@ -49,5 +56,78 @@ function openModal(e) {
 
 function closeModal(e) {
   refs.lightbox.classList.remove('is-open');
+
+  refs.overlay.removeEventListener('click', closeModalOverlay);
   refs.closeBtn.removeEventListener('click', closeModal);
+  refs.rightBtn.removeEventListener('click', openModalAnotherImg);
+  refs.leftBtn.removeEventListener('click', openModalAnotherImg);
+  window.removeEventListener('keydown', closeModalEsc);
+  window.removeEventListener('keydown', openModalAnotherImg);
 }
+
+// Закрытие модального окна по клику на div.lightbox__overlay.
+function closeModalOverlay(e) {
+  if (e.currentTarget === e.target) {
+    closeModal(e);
+  }
+}
+
+// Закрытие модального окна по нажатию клавиши ESC.
+function closeModalEsc(e) {
+  if (e.code === 'Escape') {
+    closeModal(e);
+  }
+}
+
+// Пролистывание изображений галереи в открытом модальном окне клавишами "влево" и "вправо".
+
+function openModalAnotherImg(e) {
+  let i = galleryItems.findIndex(
+    item => item.original === refs.lightboxImage.src,
+  );
+
+  if (
+    e.code === 'ArrowLeft' ||
+    e.code === 'ArrowDown' ||
+    leftBtn === e.target
+  ) {
+    if (i === 0) {
+      i += galleryItems.length;
+    }
+    i -= 1;
+  }
+
+  if (e.code === 'ArrowRight' || e.code === 'ArrowUp' || leftBtn === e.target) {
+    if (i === galleryItems.length - 1) {
+      i -= galleryItems.length;
+    }
+    i += 1;
+  }
+
+  refs.lightboxImage.src = galleryItems[i].original;
+  refs.lightboxImage.alt = galleryItems[i].description;
+}
+
+// Тоже самое, но проще и без стрелочек вверх-вниз
+// function openModalAnotherImg(e) {
+//   let i = galleryItems.findIndex(
+//     item => item.original === refs.lightboxImage.src,
+//   );
+
+//   if (e.code === 'ArrowLeft') {
+//     if (i === 0) {
+//       return;
+//     }
+//     i -= 1;
+//   }
+
+//   if (e.code === 'ArrowRight') {
+//     if (i === galleryItems.length - 1) {
+//       return;
+//     }
+//     i += 1;
+//   }
+
+//   refs.lightboxImage.src = galleryItems[i].original;
+//   refs.lightboxImage.alt = galleryItems[i].description;
+// }
