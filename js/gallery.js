@@ -63,6 +63,9 @@ function closeModal(e) {
   refs.leftBtn.removeEventListener('click', openModalAnotherImg);
   window.removeEventListener('keydown', closeModalEsc);
   window.removeEventListener('keydown', openModalAnotherImg);
+
+  refs.lightboxImage.src = '';
+  refs.lightboxImage.alt = '';
 }
 
 // Закрытие модального окна по клику на div.lightbox__overlay.
@@ -89,7 +92,7 @@ function openModalAnotherImg(e) {
   if (
     e.code === 'ArrowLeft' ||
     e.code === 'ArrowDown' ||
-    leftBtn === e.target
+    refs.leftBtn === e.target
   ) {
     if (i === 0) {
       i += galleryItems.length;
@@ -97,7 +100,11 @@ function openModalAnotherImg(e) {
     i -= 1;
   }
 
-  if (e.code === 'ArrowRight' || e.code === 'ArrowUp' || leftBtn === e.target) {
+  if (
+    e.code === 'ArrowRight' ||
+    e.code === 'ArrowUp' ||
+    refs.rightBtn === e.target
+  ) {
     if (i === galleryItems.length - 1) {
       i -= galleryItems.length;
     }
